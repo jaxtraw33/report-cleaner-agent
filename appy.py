@@ -36,7 +36,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("Raw Employee Submission")
     default_draft = "Yesterday around 3:15pm the database server completely crashed because someone uploaded the wrong config script. We lost about 45 mins of downtime on line 2. Fixed it by 4pm and back running fine."
-    raw_input = st.text_area("Paste draft here:", value=default_draft, height=280)
+    raw_input = st.text_area("Write draft here:", value=default_draft, height=280)
     process_btn = st.button("✨ Clean Report", type="primary", use_container_width=True)
 
 with col2:
