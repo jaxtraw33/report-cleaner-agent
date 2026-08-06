@@ -7,7 +7,8 @@ st.title("📝 Executive Report Cleaner Agent")
 st.caption("24/7 Cloud Service powered by Google Gemini AI")
 
 # Configure Gemini API
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+if "GEMINI_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
@@ -18,18 +19,18 @@ Rules:
 """
 
 def clean_report(raw_text: str) -> str:
-    # Uses Gemini 2.0 Flash with automatic fallback
-    try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
-    except Exception:
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
-        response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
-        
-    cleaned_text = response.text.strip()
-    if cleaned_text.startswith('"') and cleaned_text.endswith('"'):
-        cleaned_text = cleaned_text[1:-1]
-    return cleaned_text
+    # Auto-try active model names
+    model_names = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-pro"]
+    last_error = None
+    for m in model_names:
+        try:
+            model = genai.GenerativeModel(m)
+            response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
+            return response.text.strip()
+        except Exception as e:
+            last_error = e
+            continue
+    raise Exception(f"API Error: {last_error}")
 
 # UI Layout
 col1, col2 = st.columns(2)
@@ -44,15 +45,18 @@ with col2:
     st.subheader("Polished Executive Output")
     if process_btn and raw_input.strip():
         with st.spinner("Processing report..."):
-            cleaned_result = clean_report(raw_input)
-            st.code(cleaned_result, language=None)
-            st.download_button(
-                label="📥 Download Cleaned Report (.txt)",
-                data=cleaned_result,
-                file_name="cleaned_report.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
-            st.success("Report successfully cleaned!")
+            try:
+                cleaned_result = clean_report(raw_input)
+                st.code(cleaned_result, language=None)
+                st.download_button(
+                    label="📥 Download Cleaned Report (.txt)",
+                    data=cleaned_result,
+                    file_name="cleaned_report.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+                st.success("Report successfully cleaned!")
+            except Exception as err:
+                st.error(f"Execution failed: {err}")
     else:
         st.info("Paste a report draft on the left and click 'Clean Report'.")
