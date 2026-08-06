@@ -4,7 +4,9 @@ from groq import Groq
 st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 
 st.title("📝 Lead to Executive Report Cleaner AI AGENT beta")
-st.caption("created by Brett Shaw")
+st.caption("this app is scalable, integrates with Dynamics and runs locally in the background-no cloud tokens needed")
+st.caption("lead input from app to fill RAW field, COS review in Oasis or automate AI language")
+st.caption("Brett Shaw")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
