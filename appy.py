@@ -3,7 +3,7 @@ from groq import Groq
 
 st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 
-st.title("📝 Executive Report Cleaner Agent")
+st.title("📝 Executive Report Cleaner AI Agent")
 st.caption("24/7 Cloud Service powered by Groq Llama 3")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
