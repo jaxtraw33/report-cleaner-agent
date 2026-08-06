@@ -8,7 +8,6 @@ st.caption("24/7 Cloud Service powered by Google Gemini AI")
 
 # Configure Gemini API
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-2.0-flash")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
@@ -19,8 +18,14 @@ Rules:
 """
 
 def clean_report(raw_text: str) -> str:
-    prompt = f"{SYSTEM_PROMPT}\\n\\nReport to clean:\\n{raw_text}"
-    response = model.generate_content(prompt)
+    # Uses Gemini 2.0 Flash with automatic fallback
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
+    except Exception:
+        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
+        
     cleaned_text = response.text.strip()
     if cleaned_text.startswith('"') and cleaned_text.endswith('"'):
         cleaned_text = cleaned_text[1:-1]
