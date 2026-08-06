@@ -1,14 +1,10 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 
 st.title("📝 Executive Report Cleaner Agent")
 st.caption("24/7 Cloud Service powered by Google Gemini AI")
-
-# Configure Gemini API
-if "GEMINI_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
@@ -19,18 +15,20 @@ Rules:
 """
 
 def clean_report(raw_text: str) -> str:
-    # Auto-try active model names
-    model_names = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-pro"]
-    last_error = None
-    for m in model_names:
+    client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+    
+    # Try current active Gemini model endpoints
+    for model_id in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
         try:
-            model = genai.GenerativeModel(m)
-            response = model.generate_content(f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}")
+            response = client.models.generate_content(
+                model=model_id,
+                contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
+            )
             return response.text.strip()
-        except Exception as e:
-            last_error = e
+        except Exception:
             continue
-    raise Exception(f"API Error: {last_error}")
+            
+    raise Exception("Could not reach Gemini API. Please double-check your GEMINI_API_KEY in Streamlit Secrets.")
 
 # UI Layout
 col1, col2 = st.columns(2)
