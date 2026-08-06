@@ -19,7 +19,7 @@ Rules:
 
 def clean_report(raw_text: str) -> str:
     response = client.messages.create(
-        model="claude-3-5-sonnet-latest",
+        model="claude-3-haiku-20240307",
         max_tokens=2000,
         temperature=0.0,
         system=SYSTEM_PROMPT,
