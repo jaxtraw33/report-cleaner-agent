@@ -1,10 +1,10 @@
 import streamlit as st
-from google import genai
+from groq import Groq
 
 st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 
 st.title("📝 Executive Report Cleaner Agent")
-st.caption("24/7 Cloud Service powered by Google Gemini AI")
+st.caption("24/7 Cloud Service powered by Groq Llama 3")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
@@ -15,16 +15,19 @@ Rules:
 """
 
 def clean_report(raw_text: str) -> str:
-    api_key = st.secrets.get("GEMINI_API_KEY")
+    api_key = st.secrets.get("GROQ_API_KEY")
     if not api_key:
-        raise ValueError("GEMINI_API_KEY is missing from Streamlit Secrets.")
+        raise ValueError("GROQ_API_KEY is missing from Streamlit Secrets.")
         
-    client = genai.Client(api_key=api_key.strip())
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
+    client = Groq(api_key=api_key.strip())
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": raw_text}
+        ],
     )
-    return response.text.strip()
+    return response.choices[0].message.content.strip()
 
 # UI Layout
 col1, col2 = st.columns(2)
@@ -51,6 +54,6 @@ with col2:
                 )
                 st.success("Report successfully cleaned!")
             except Exception as err:
-                st.error(f"API Error details: {err}")
+                st.error(f"Execution error: {err}")
     else:
         st.info("Paste a report draft on the left and click 'Clean Report'.")
