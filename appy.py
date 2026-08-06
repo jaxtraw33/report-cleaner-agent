@@ -8,7 +8,7 @@ st.caption("24/7 Cloud Service powered by Google Gemini AI")
 
 # Configure Gemini API
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
