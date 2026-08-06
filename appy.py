@@ -6,7 +6,7 @@ st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 st.title("📝 Lead to Executive Report Cleaner AI AGENT beta")
 st.caption("bare bones, this app is scalable, integrates with Dynamics and runs locally in the background")
 st.caption("lead input from app to fill RAW field, COS review in Oasis or automate AI language")
-st.caption("Developer-- Brett Shaw")
+st.caption("Developer: Brett Shaw")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
