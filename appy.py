@@ -20,11 +20,19 @@ def clean_report(raw_text: str) -> str:
         raise ValueError("GEMINI_API_KEY is missing from Streamlit Secrets.")
         
     client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
-    )
-    return response.text.strip()
+    
+    # Cycle through active Gemini endpoints
+    for model_id in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]:
+        try:
+            response = client.models.generate_content(
+                model=model_id,
+                contents=f"{SYSTEM_PROMPT}\\n\\nReport to clean:\\n{raw_text}",
+            )
+            return response.text.strip()
+        except Exception:
+            continue
+            
+    raise Exception("Unable to connect to an active Gemini model. Please verify your API key at aistudio.google.com.")
 
 # UI Layout
 col1, col2 = st.columns(2)
