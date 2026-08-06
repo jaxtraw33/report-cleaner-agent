@@ -21,7 +21,7 @@ def clean_report(raw_text: str) -> str:
         
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash",
         contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
     )
     return response.text.strip()
