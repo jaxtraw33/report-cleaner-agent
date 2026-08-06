@@ -20,11 +20,28 @@ def clean_report(raw_text: str) -> str:
         raise ValueError("GEMINI_API_KEY is missing from Streamlit Secrets.")
         
     client = genai.Client(api_key=api_key.strip())
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
-    )
-    return response.text.strip()
+    
+    # Try models in order of current free-tier availability
+    candidate_models = [
+        "gemini-2.5-flash", 
+        "gemini-2.0-flash-exp", 
+        "gemini-1.5-flash-8b", 
+        "gemini-2.0-flash"
+    ]
+    
+    last_err = None
+    for model_id in candidate_models:
+        try:
+            response = client.models.generate_content(
+                model=model_id,
+                contents=f"{SYSTEM_PROMPT}\n\nReport to clean:\n{raw_text}",
+            )
+            return response.text.strip()
+        except Exception as e:
+            last_err = e
+            continue
+            
+    raise last_err
 
 # UI Layout
 col1, col2 = st.columns(2)
