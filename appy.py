@@ -35,7 +35,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Raw Employee Submission")
-    default_draft = "Yesterdy around 3:15pm the databise server compitently crashed because sum dumb-ass uploaded the wrong config script. We loss about 45 mins of downtime on line 2. Fixed it by 4pm and running back fine."
+    default_draft = "Yesterdy around 3:15pm the databise server compitently crashed because sum dumb-ass uploaded the wrong config script. We loss about 45 mins of downtime line 2. Fixed it by 4pm and bacxk running fine."
     raw_input = st.text_area("Write draft here:", value=default_draft, height=280)
     process_btn = st.button("✨ Clean Report", type="primary", use_container_width=True)
 
