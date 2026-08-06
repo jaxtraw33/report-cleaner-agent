@@ -44,7 +44,13 @@ with col2:
         with st.spinner("Processing report..."):
             try:
                 cleaned_result = clean_report(raw_input)
-                st.code(cleaned_result, language=None)
+                st.text_area(
+                    "Polished Result",
+                    value=cleaned_result,
+                    height=288,
+                    disabled=True,
+                    label_visibility="collapsed",
+                )    
                 st.download_button(
                     label="📥 Download Cleaned Report (.txt)",
                     data=cleaned_result,
