@@ -1,13 +1,14 @@
 import streamlit as st
-from anthropic import Anthropic
+import google.generativeai as genai
 
 st.set_page_config(page_title="Executive Report Cleaner", layout="wide")
 
 st.title("📝 Executive Report Cleaner Agent")
-st.caption("24/7 Cloud Service powered by Claude 3.7 Sonnet")
+st.caption("24/7 Cloud Service powered by Google Gemini AI")
 
-# Reads API Key securely from Streamlit Cloud Secrets
-client = Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+# Configure Gemini API
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 SYSTEM_PROMPT = """You are an executive communications editor.
 Rules:
@@ -18,18 +19,9 @@ Rules:
 """
 
 def clean_report(raw_text: str) -> str:
-    response = client.messages.create(
-        model="claude-3-haiku-20240307",
-        max_tokens=2000,
-        temperature=0.0,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {"role": "user", "content": "Yesterday around 2pm line 1 broke because of bad software."},
-            {"role": "assistant", "content": "Yesterday at approximately 2:00 PM, Line 1 experienced an operational disruption due to a software error."},
-            {"role": "user", "content": raw_text}
-        ]
-    )
-    cleaned_text = response.content[0].text.strip()
+    prompt = f"{SYSTEM_PROMPT}\\n\\nReport to clean:\\n{raw_text}"
+    response = model.generate_content(prompt)
+    cleaned_text = response.text.strip()
     if cleaned_text.startswith('"') and cleaned_text.endswith('"'):
         cleaned_text = cleaned_text[1:-1]
     return cleaned_text
